@@ -3,12 +3,12 @@
 *Based on [https://files.openscad.org/grammar.xhtml](https://files.openscad.org/grammar.xhtml)*
 
 ### Supported features
-- [ ] package
-- [ ] statements
-- [ ] statement
-- [ ] include
-- [ ] use
-- [ ] comma_opt
+- [x] package
+- [x] statements
+- [x] statement
+- [x] include
+- [x] use
+- [x] comma_opt
 - [ ] expressions_opt
 - [ ] expressions
 - [ ] expr

@@ -16,7 +16,7 @@
     }
   },
   {
-    "type": "module",
+    "type": "package",
     "named": true,
     "fields": {},
     "children": {

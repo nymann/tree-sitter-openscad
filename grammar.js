@@ -2,15 +2,14 @@ module.exports = grammar({
   name: 'openscad',
 
   rules: {
-      module: $ => repeat($._statement),
-
+      package: $ => repeat($._statement),
       _statement: $ => choice(
           $._simple_statements
       ),
 
       _simple_statements: $ => seq(
           $._simple_statement,
-          $._semicolon,
+          optional($._semicolon),
           $._newline
       ),
 
@@ -19,14 +18,15 @@ module.exports = grammar({
           $.use_statement
       ),
 
+      _path: $ => field('path', choice($.system_lib_string)),
       include_statement: $ => seq(
           'include',
-          field('path', choice($.system_lib_string))
+          $._path
       ),
 
       use_statement: $ => seq(
           'use',
-          field('path', choice($.system_lib_string))
+          $._path
       ),
 
       system_lib_string: $ => token(seq(
