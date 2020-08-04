@@ -3,10 +3,24 @@ Include statements
 =====================================
 
 include <lib.scad>;
-use <lib.scad>;
+include <lib.scad>
 
 ---
 
-(module
+(package
     (include_statement path: (system_lib_string))
+    (include_statement path: (system_lib_string)))
+
+=====================================
+Use statements
+=====================================
+
+use <lib.scad>;
+use <lib.scad>
+
+---
+
+(package
+    (use_statement path: (system_lib_string))
     (use_statement path: (system_lib_string)))
+

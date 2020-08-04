@@ -6,9 +6,9 @@
 #endif
 
 #define LANGUAGE_VERSION 11
-#define STATE_COUNT 12
+#define STATE_COUNT 14
 #define LARGE_STATE_COUNT 4
-#define SYMBOL_COUNT 13
+#define SYMBOL_COUNT 14
 #define ALIAS_COUNT 0
 #define TOKEN_COUNT 6
 #define EXTERNAL_TOKEN_COUNT 0
@@ -21,13 +21,14 @@ enum {
   sym_system_lib_string = 3,
   sym__semicolon = 4,
   sym__newline = 5,
-  sym_module = 6,
+  sym_package = 6,
   sym__statement = 7,
   sym__simple_statements = 8,
   sym__simple_statement = 9,
-  sym_include_statement = 10,
-  sym_use_statement = 11,
-  aux_sym_module_repeat1 = 12,
+  sym__path = 10,
+  sym_include_statement = 11,
+  sym_use_statement = 12,
+  aux_sym_package_repeat1 = 13,
 };
 
 static const char *ts_symbol_names[] = {
@@ -37,13 +38,14 @@ static const char *ts_symbol_names[] = {
   [sym_system_lib_string] = "system_lib_string",
   [sym__semicolon] = "_semicolon",
   [sym__newline] = "_newline",
-  [sym_module] = "module",
+  [sym_package] = "package",
   [sym__statement] = "_statement",
   [sym__simple_statements] = "_simple_statements",
   [sym__simple_statement] = "_simple_statement",
+  [sym__path] = "_path",
   [sym_include_statement] = "include_statement",
   [sym_use_statement] = "use_statement",
-  [aux_sym_module_repeat1] = "module_repeat1",
+  [aux_sym_package_repeat1] = "package_repeat1",
 };
 
 static TSSymbol ts_symbol_map[] = {
@@ -53,13 +55,14 @@ static TSSymbol ts_symbol_map[] = {
   [sym_system_lib_string] = sym_system_lib_string,
   [sym__semicolon] = sym__semicolon,
   [sym__newline] = sym__newline,
-  [sym_module] = sym_module,
+  [sym_package] = sym_package,
   [sym__statement] = sym__statement,
   [sym__simple_statements] = sym__simple_statements,
   [sym__simple_statement] = sym__simple_statement,
+  [sym__path] = sym__path,
   [sym_include_statement] = sym_include_statement,
   [sym_use_statement] = sym_use_statement,
-  [aux_sym_module_repeat1] = aux_sym_module_repeat1,
+  [aux_sym_package_repeat1] = aux_sym_package_repeat1,
 };
 
 static const TSSymbolMetadata ts_symbol_metadata[] = {
@@ -87,7 +90,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = false,
     .named = true,
   },
-  [sym_module] = {
+  [sym_package] = {
     .visible = true,
     .named = true,
   },
@@ -103,6 +106,10 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = false,
     .named = true,
   },
+  [sym__path] = {
+    .visible = false,
+    .named = true,
+  },
   [sym_include_statement] = {
     .visible = true,
     .named = true,
@@ -111,7 +118,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [aux_sym_module_repeat1] = {
+  [aux_sym_package_repeat1] = {
     .visible = false,
     .named = false,
   },
@@ -126,16 +133,19 @@ static const char *ts_field_names[] = {
   [field_path] = "path",
 };
 
-static const TSFieldMapSlice ts_field_map_slices[2] = {
+static const TSFieldMapSlice ts_field_map_slices[3] = {
   [1] = {.index = 0, .length = 1},
+  [2] = {.index = 1, .length = 1},
 };
 
 static const TSFieldMapEntry ts_field_map_entries[] = {
   [0] =
-    {field_path, 1},
+    {field_path, 0},
+  [1] =
+    {field_path, 1, .inherited = true},
 };
 
-static TSSymbol ts_alias_sequences[2][MAX_ALIAS_SEQUENCE_LENGTH] = {
+static TSSymbol ts_alias_sequences[3][MAX_ALIAS_SEQUENCE_LENGTH] = {
   [0] = {0},
 };
 
@@ -156,6 +166,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 1:
       if (lookahead == '\n') ADVANCE(18);
+      if (lookahead == ';') ADVANCE(17);
       if (lookahead == '\t' ||
           lookahead == '\r' ||
           lookahead == ' ') SKIP(1)
@@ -236,10 +247,12 @@ static TSLexMode ts_lex_modes[STATE_COUNT] = {
   [5] = {.lex_state = 0},
   [6] = {.lex_state = 0},
   [7] = {.lex_state = 0},
-  [8] = {.lex_state = 0},
-  [9] = {.lex_state = 0},
-  [10] = {.lex_state = 0},
+  [8] = {.lex_state = 1},
+  [9] = {.lex_state = 1},
+  [10] = {.lex_state = 1},
   [11] = {.lex_state = 1},
+  [12] = {.lex_state = 0},
+  [13] = {.lex_state = 1},
 };
 
 static uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
@@ -251,13 +264,13 @@ static uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__semicolon] = ACTIONS(1),
   },
   [1] = {
-    [sym_module] = STATE(7),
+    [sym_package] = STATE(12),
     [sym__statement] = STATE(2),
     [sym__simple_statements] = STATE(2),
     [sym__simple_statement] = STATE(8),
     [sym_include_statement] = STATE(8),
     [sym_use_statement] = STATE(8),
-    [aux_sym_module_repeat1] = STATE(2),
+    [aux_sym_package_repeat1] = STATE(2),
     [ts_builtin_sym_end] = ACTIONS(3),
     [anon_sym_include] = ACTIONS(5),
     [anon_sym_use] = ACTIONS(7),
@@ -268,7 +281,7 @@ static uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__simple_statement] = STATE(8),
     [sym_include_statement] = STATE(8),
     [sym_use_statement] = STATE(8),
-    [aux_sym_module_repeat1] = STATE(3),
+    [aux_sym_package_repeat1] = STATE(3),
     [ts_builtin_sym_end] = ACTIONS(9),
     [anon_sym_include] = ACTIONS(5),
     [anon_sym_use] = ACTIONS(7),
@@ -279,7 +292,7 @@ static uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym__simple_statement] = STATE(8),
     [sym_include_statement] = STATE(8),
     [sym_use_statement] = STATE(8),
-    [aux_sym_module_repeat1] = STATE(3),
+    [aux_sym_package_repeat1] = STATE(3),
     [ts_builtin_sym_end] = ACTIONS(11),
     [anon_sym_include] = ACTIONS(13),
     [anon_sym_use] = ACTIONS(16),
@@ -293,57 +306,84 @@ static uint16_t ts_small_parse_table[] = {
       anon_sym_include,
       anon_sym_use,
   [6] = 1,
-    ACTIONS(21), 1,
-      sym_system_lib_string,
-  [10] = 1,
+    ACTIONS(21), 3,
+      ts_builtin_sym_end,
+      anon_sym_include,
+      anon_sym_use,
+  [12] = 2,
     ACTIONS(23), 1,
       sym_system_lib_string,
-  [14] = 1,
+    STATE(10), 1,
+      sym__path,
+  [19] = 2,
+    ACTIONS(23), 1,
+      sym_system_lib_string,
+    STATE(11), 1,
+      sym__path,
+  [26] = 2,
     ACTIONS(25), 1,
-      ts_builtin_sym_end,
-  [18] = 1,
-    ACTIONS(27), 1,
       sym__semicolon,
-  [22] = 1,
+    ACTIONS(27), 1,
+      sym__newline,
+  [33] = 2,
     ACTIONS(29), 1,
       sym__semicolon,
-  [26] = 1,
     ACTIONS(31), 1,
-      sym__semicolon,
-  [30] = 1,
+      sym__newline,
+  [40] = 2,
     ACTIONS(33), 1,
+      sym__semicolon,
+    ACTIONS(35), 1,
+      sym__newline,
+  [47] = 2,
+    ACTIONS(37), 1,
+      sym__semicolon,
+    ACTIONS(39), 1,
+      sym__newline,
+  [54] = 1,
+    ACTIONS(41), 1,
+      ts_builtin_sym_end,
+  [58] = 1,
+    ACTIONS(43), 1,
       sym__newline,
 };
 
 static uint32_t ts_small_parse_table_map[] = {
   [SMALL_STATE(4)] = 0,
   [SMALL_STATE(5)] = 6,
-  [SMALL_STATE(6)] = 10,
-  [SMALL_STATE(7)] = 14,
-  [SMALL_STATE(8)] = 18,
-  [SMALL_STATE(9)] = 22,
-  [SMALL_STATE(10)] = 26,
-  [SMALL_STATE(11)] = 30,
+  [SMALL_STATE(6)] = 12,
+  [SMALL_STATE(7)] = 19,
+  [SMALL_STATE(8)] = 26,
+  [SMALL_STATE(9)] = 33,
+  [SMALL_STATE(10)] = 40,
+  [SMALL_STATE(11)] = 47,
+  [SMALL_STATE(12)] = 54,
+  [SMALL_STATE(13)] = 58,
 };
 
 static TSParseActionEntry ts_parse_actions[] = {
   [0] = {.entry = {.count = 0, .reusable = false}},
   [1] = {.entry = {.count = 1, .reusable = false}}, RECOVER(),
-  [3] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_module, 0),
-  [5] = {.entry = {.count = 1, .reusable = true}}, SHIFT(5),
-  [7] = {.entry = {.count = 1, .reusable = true}}, SHIFT(6),
-  [9] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_module, 1),
-  [11] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_module_repeat1, 2),
-  [13] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_module_repeat1, 2), SHIFT_REPEAT(5),
-  [16] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_module_repeat1, 2), SHIFT_REPEAT(6),
-  [19] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym__simple_statements, 3),
-  [21] = {.entry = {.count = 1, .reusable = true}}, SHIFT(9),
-  [23] = {.entry = {.count = 1, .reusable = true}}, SHIFT(10),
-  [25] = {.entry = {.count = 1, .reusable = true}},  ACCEPT_INPUT(),
-  [27] = {.entry = {.count = 1, .reusable = true}}, SHIFT(11),
-  [29] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_include_statement, 2, .production_id = 1),
-  [31] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_use_statement, 2, .production_id = 1),
-  [33] = {.entry = {.count = 1, .reusable = true}}, SHIFT(4),
+  [3] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_package, 0),
+  [5] = {.entry = {.count = 1, .reusable = true}}, SHIFT(6),
+  [7] = {.entry = {.count = 1, .reusable = true}}, SHIFT(7),
+  [9] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_package, 1),
+  [11] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_package_repeat1, 2),
+  [13] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_package_repeat1, 2), SHIFT_REPEAT(6),
+  [16] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_package_repeat1, 2), SHIFT_REPEAT(7),
+  [19] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym__simple_statements, 2),
+  [21] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym__simple_statements, 3),
+  [23] = {.entry = {.count = 1, .reusable = true}}, SHIFT(9),
+  [25] = {.entry = {.count = 1, .reusable = false}}, SHIFT(13),
+  [27] = {.entry = {.count = 1, .reusable = true}}, SHIFT(4),
+  [29] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym__path, 1, .production_id = 1),
+  [31] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym__path, 1, .production_id = 1),
+  [33] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_include_statement, 2, .production_id = 2),
+  [35] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_include_statement, 2, .production_id = 2),
+  [37] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_use_statement, 2, .production_id = 2),
+  [39] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_use_statement, 2, .production_id = 2),
+  [41] = {.entry = {.count = 1, .reusable = true}},  ACCEPT_INPUT(),
+  [43] = {.entry = {.count = 1, .reusable = true}}, SHIFT(5),
 };
 
 #ifdef __cplusplus
