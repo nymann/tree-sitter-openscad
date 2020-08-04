@@ -1,0 +1,12 @@
+=====================================
+Include statements
+=====================================
+
+include <lib.scad>;
+use <lib.scad>;
+
+---
+
+(module
+    (include_statement path: (system_lib_string))
+    (use_statement path: (system_lib_string)))

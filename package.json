@@ -1,0 +1,27 @@
+{
+    "name": "tree-sitter-openscad",
+    "version": "0.0.1",
+    "description": "OpenSCAD grammar for tree-sitter",
+    "main": "index.js",
+    "scripts": {
+        "build": "tree-sitter generate && node-gyp build",
+        "test": "tree-sitter test && script/parse-examples",
+        "test-windows": "tree-sitter test"
+    },
+    "author": "Kristian Nymann Jakobsen",
+    "license": "GPLV3 OR LATER",
+    "tree-sitter": [
+        {
+            "scope": "source.scad",
+            "file-types": [
+                "scad"
+            ]
+        }
+    ],
+    "dependencies": {
+        "nan": "^2.14.1"
+    },
+    "devDependencies": {
+        "tree-sitter-cli": "^0.16.9"
+    }
+}
